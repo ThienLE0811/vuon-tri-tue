@@ -73,7 +73,12 @@ export default async function ExercisePage({
         </div>
       </div>
 
-      <ExerciseForm exerciseId={exercise._id.toString()} path={path} questions={questions} />
+      <ExerciseForm
+        exerciseId={exercise._id.toString()}
+        path={path}
+        questions={questions}
+        subject={subject}
+      />
     </main>
   );
 }

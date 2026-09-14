@@ -7,6 +7,9 @@ import {
   submitExercise,
   type SubmitExerciseResult,
 } from "@/lib/actions/exercise";
+import { fireCelebrationConfetti, fireSuperConfetti } from "@/lib/confetti";
+import { playTing, playSuccessSound, playFanfare } from "@/lib/audio";
+import { SpeechButton } from "@/components/speech-button";
 
 interface ExerciseQuestion {
   id: string;
@@ -18,17 +21,26 @@ interface ExerciseFormProps {
   exerciseId: string;
   path: string;
   questions: ExerciseQuestion[];
+  subject?: string;
 }
 
-export function ExerciseForm({ exerciseId, path, questions }: ExerciseFormProps) {
+export function ExerciseForm({
+  exerciseId,
+  path,
+  questions,
+  subject,
+}: ExerciseFormProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<SubmitExerciseResult | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const speechLang = subject === "tieng-anh" ? "en-US" : "vi-VN";
 
   const allAnswered = questions.every((q) => answers[q.id]);
 
   const handleSelect = (questionId: string, option: string) => {
     if (result) return;
+    playTing();
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
   };
 
@@ -39,6 +51,18 @@ export function ExerciseForm({ exerciseId, path, questions }: ExerciseFormProps)
       try {
         const graded = await submitExercise(exerciseId, answers, path);
         setResult(graded);
+
+        if (graded.score === graded.totalQuestions && graded.totalQuestions > 0) {
+          fireSuperConfetti();
+          playFanfare();
+          toast.success("Xuất sắc! Bé trả lời đúng 100% tất cả các câu! 🏆");
+        } else if (graded.score > 0) {
+          fireCelebrationConfetti();
+          playSuccessSound();
+          toast.success(`Giỏi quá! Bé làm đúng ${graded.score}/${graded.totalQuestions} câu! 🌟`);
+        } else {
+          toast.info("Con hãy xem lại giải thích và thử lại nhé! Cố lên nào! 💪");
+        }
       } catch {
         toast.error("Có lỗi xảy ra, con hãy thử lại nhé!");
       }
@@ -71,9 +95,18 @@ export function ExerciseForm({ exerciseId, path, questions }: ExerciseFormProps)
             key={question.id}
             className="rounded-3xl border-2 border-slate-200 border-b-4 bg-white p-5 shadow-sm"
           >
-            <p className="mb-4 text-base font-extrabold text-slate-800 sm:text-lg">
-              Câu {index + 1}. {question.content}
-            </p>
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <p className="text-base font-extrabold text-slate-800 sm:text-lg">
+                Câu {index + 1}. {question.content}
+              </p>
+              <SpeechButton
+                text={question.content}
+                lang={speechLang}
+                label="Nghe 🔊"
+                size="sm"
+                className="shrink-0"
+              />
+            </div>
 
             <div className="flex flex-col gap-2.5">
               {question.options.map((option, optionIndex) => {

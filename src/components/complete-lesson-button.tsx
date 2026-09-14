@@ -4,6 +4,8 @@ import { useTransition } from "react";
 import { markLessonComplete } from "@/lib/actions/progress";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { fireCelebrationConfetti } from "@/lib/confetti";
+import { playFanfare } from "@/lib/audio";
 
 interface CompleteLessonButtonProps {
   lessonId: string;
@@ -32,6 +34,8 @@ export function CompleteLessonButton({
     startTransition(async () => {
       try {
         await markLessonComplete(lessonId, path);
+        fireCelebrationConfetti();
+        playFanfare();
         toast.success("Tuyệt vời! Bé đã hoàn thành bài học! 🌟");
       } catch {
         toast.error("Có lỗi xảy ra, con hãy thử lại nhé!");

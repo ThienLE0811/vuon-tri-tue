@@ -10,6 +10,7 @@ import ProgressModel from "@/models/Progress";
 import { subjectLabel } from "@/lib/subjects";
 import { CompleteLessonButton } from "@/components/complete-lesson-button";
 import ExerciseModel from "@/models/Exercise";
+import { SpeechButton } from "@/components/speech-button";
 
 export default async function LessonDetailPage({
   params,
@@ -45,9 +46,17 @@ export default async function LessonDetailPage({
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-black text-slate-800 sm:text-3xl">
-            {lesson.title}
-          </h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-black text-slate-800 sm:text-3xl">
+              {lesson.title}
+            </h1>
+            <SpeechButton
+              text={`${lesson.title}. ${lesson.content}`}
+              lang={subject === "tieng-anh" ? "en-US" : "vi-VN"}
+              label="Nghe bài đọc 🔊"
+              size="default"
+            />
+          </div>
           {progress && (
             <span className="inline-flex items-center gap-1.5 rounded-2xl border-2 border-emerald-300 border-b-3 bg-emerald-100 px-3.5 py-1 text-xs font-black text-emerald-800 shadow-sm">
               <span>🌟</span> Đã hoàn thành
