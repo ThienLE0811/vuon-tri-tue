@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -21,9 +22,23 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const isAnyLoading = loading || googleLoading;
+
+  async function handleGoogleSignIn() {
+    if (isAnyLoading) return;
+    setGoogleLoading(true);
+    try {
+      await signIn("google", { callbackUrl });
+    } catch {
+      setGoogleLoading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (isAnyLoading) return;
     setLoading(true);
 
     const result = await signIn("credentials", {
@@ -58,10 +73,18 @@ function LoginForm() {
             type="button"
             variant="3d-outline"
             size="3d-default"
-            className="w-full"
-            onClick={() => signIn("google", { callbackUrl })}
+            className="w-full flex items-center justify-center gap-2"
+            disabled={isAnyLoading}
+            onClick={handleGoogleSignIn}
           >
-            Đăng nhập với Google
+            {googleLoading ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                <span>Đang kết nối Google...</span>
+              </>
+            ) : (
+              <span>Đăng nhập với Google</span>
+            )}
           </Button>
 
           <div className="flex items-center gap-2">
@@ -77,7 +100,8 @@ function LoginForm() {
                 id="email"
                 type="email"
                 required
-                className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
+                disabled={isAnyLoading}
+                className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500 disabled:opacity-60"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -87,13 +111,27 @@ function LoginForm() {
               <PasswordInput
                 id="password"
                 required
-                className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
+                disabled={isAnyLoading}
+                className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500 disabled:opacity-60"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <Button type="submit" variant="3d-primary" size="3d-default" className="w-full" disabled={loading}>
-              {loading ? "Đang đăng nhập..." : "Đăng nhập ngay 🚀"}
+            <Button
+              type="submit"
+              variant="3d-primary"
+              size="3d-default"
+              className="w-full flex items-center justify-center gap-2"
+              disabled={isAnyLoading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  <span>Đang đăng nhập...</span>
+                </>
+              ) : (
+                <span>Đăng nhập ngay 🚀</span>
+              )}
             </Button>
           </form>
 

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -22,6 +22,7 @@ export default function RegisterPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
 
     if (password !== confirmPassword) {
       toast.error("Mật khẩu nhập lại không khớp");
@@ -44,17 +45,9 @@ export default function RegisterPage() {
       return;
     }
 
-    const result = await signIn("credentials", { email, password, redirect: false });
     setLoading(false);
-
-    if (result?.error) {
-      toast.error("Đăng ký thành công, vui lòng đăng nhập");
-      router.push("/login");
-      return;
-    }
-
-    router.push("/");
-    router.refresh();
+    toast.success("Đăng ký thành công! Con hãy đăng nhập để bắt đầu học nhé 🌟");
+    router.push("/login");
   }
 
   return (
@@ -76,7 +69,8 @@ export default function RegisterPage() {
                   id="name"
                   required
                   placeholder="Ví dụ: Bé Bo"
-                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
+                  disabled={loading}
+                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500 disabled:opacity-60"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -87,7 +81,8 @@ export default function RegisterPage() {
                   id="email"
                   type="email"
                   required
-                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
+                  disabled={loading}
+                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500 disabled:opacity-60"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -98,7 +93,8 @@ export default function RegisterPage() {
                   id="password"
                   required
                   minLength={6}
-                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
+                  disabled={loading}
+                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500 disabled:opacity-60"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -109,13 +105,27 @@ export default function RegisterPage() {
                   id="confirm-password"
                   required
                   minLength={6}
-                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
+                  disabled={loading}
+                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500 disabled:opacity-60"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
-              <Button type="submit" variant="3d-primary" size="3d-default" className="w-full" disabled={loading}>
-                {loading ? "Đang đăng ký..." : "Tạo tài khoản ngay 🚀"}
+              <Button
+                type="submit"
+                variant="3d-primary"
+                size="3d-default"
+                className="w-full flex items-center justify-center gap-2"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>Đang tạo tài khoản...</span>
+                  </>
+                ) : (
+                  <span>Tạo tài khoản ngay 🚀</span>
+                )}
               </Button>
             </form>
 

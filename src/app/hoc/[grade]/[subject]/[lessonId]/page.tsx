@@ -8,7 +8,8 @@ import { connectDB } from "@/lib/db";
 import LessonModel from "@/models/Lesson";
 import ProgressModel from "@/models/Progress";
 import { subjectLabel } from "@/lib/subjects";
-import { markLessonComplete } from "@/lib/actions/progress";
+import { CompleteLessonButton } from "@/components/complete-lesson-button";
+import ExerciseModel from "@/models/Exercise";
 
 export default async function LessonDetailPage({
   params,
@@ -27,6 +28,7 @@ export default async function LessonDetailPage({
   if (!lesson) notFound();
 
   const progress = await ProgressModel.findOne({ userId, lessonId, completed: true }).lean();
+  const exercise = await ExerciseModel.findOne({ lessonId }).lean();
   const path = `/hoc/${grade}/${subject}/${lessonId}`;
 
   return (
@@ -74,21 +76,24 @@ export default async function LessonDetailPage({
         </article>
       </div>
 
-      {/* Big 3D Complete Button Form */}
-      <form action={markLessonComplete.bind(null, lessonId, path)} className="pt-2">
-        {progress ? (
-          <div className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-emerald-300 border-b-4 bg-emerald-100 py-4 text-base font-black text-emerald-800 shadow-sm sm:text-lg">
-            <span>🎉</span> Bé đã hoàn thành bài học này rồi!
-          </div>
-        ) : (
-          <button
-            type="submit"
-            className="btn-3d btn-3d-green w-full py-4 text-base font-black tracking-wide sm:text-lg"
-          >
-            Đánh dấu đã học xong ⭐
-          </button>
-        )}
-      </form>
+      {/* Exercise link */}
+      {exercise && (
+        <Link
+          href={`${path}/exercise`}
+          className="btn-3d btn-3d-blue flex w-full items-center justify-center gap-2 py-4 text-base font-black tracking-wide sm:text-lg"
+        >
+          <span>📝</span> Làm bài tập trắc nghiệm
+        </Link>
+      )}
+
+      {/* Complete Button with loading state & spam prevention */}
+      <div className="pt-2">
+        <CompleteLessonButton
+          lessonId={lessonId}
+          path={path}
+          isCompleted={!!progress}
+        />
+      </div>
     </main>
   );
 }

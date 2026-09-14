@@ -22,7 +22,7 @@ const exerciseSchema = new Schema(
   { timestamps: true }
 );
 
-exerciseSchema.index({ lessonId: 1 });
+exerciseSchema.index({ lessonId: 1 }, { unique: true });
 
 export type Exercise = InferSchemaType<typeof exerciseSchema>;
 

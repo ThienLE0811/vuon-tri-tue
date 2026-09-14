@@ -1,6 +1,7 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { useTransition } from "react";
+import { LogOut, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +11,15 @@ import {
 import { logout } from "@/lib/actions/auth";
 
 export function UserMenu({ name }: { name: string }) {
+  const [isPending, startTransition] = useTransition();
   const initial = name.trim()[0]?.toUpperCase() ?? "?";
+
+  const handleLogout = () => {
+    if (isPending) return;
+    startTransition(async () => {
+      await logout();
+    });
+  };
 
   return (
     <DropdownMenu>
@@ -23,11 +32,16 @@ export function UserMenu({ name }: { name: string }) {
       <DropdownMenuContent align="end" className="rounded-2xl border-2 border-slate-200 shadow-lg p-1.5">
         <DropdownMenuItem
           variant="destructive"
-          className="rounded-xl font-bold cursor-pointer"
-          onClick={() => logout()}
+          disabled={isPending}
+          className="rounded-xl font-bold cursor-pointer flex items-center gap-2 disabled:opacity-60 disabled:pointer-events-none"
+          onClick={handleLogout}
         >
-          <LogOut className="size-4" />
-          Đăng xuất
+          {isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <LogOut className="size-4" />
+          )}
+          <span>{isPending ? "Đang đăng xuất..." : "Đăng xuất"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
