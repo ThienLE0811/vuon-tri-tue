@@ -60,7 +60,7 @@ export default async function HomePage() {
   const user = session!.user;
 
   return (
-    <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
+    <div className="relative flex min-h-full flex-1 flex-col overflow-x-clip">
       {/* Decorative ambient blurred color spots */}
       <div
         aria-hidden
