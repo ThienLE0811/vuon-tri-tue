@@ -59,7 +59,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const dbUser = await UserModel.findOne({ email: token.email.toLowerCase() });
         if (dbUser) {
           token.id = dbUser._id.toString();
-          token.grade = dbUser.grade;
         }
       }
       return token;
@@ -67,7 +66,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.grade = (token.grade as number | null) ?? null;
       }
       return session;
     },

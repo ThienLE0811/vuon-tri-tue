@@ -45,10 +45,10 @@ export default async function LessonListPage({
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-6">
       <div>
         <Link
-          href="/"
+          href={`/hoc/${grade}`}
           className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "-ml-3 mb-2")}
         >
-          ← Trang chủ
+          ← Lớp {grade} — Chọn môn khác
         </Link>
         <h1 className="text-2xl font-semibold">
           {subjectLabel(subject)} — Lớp {grade}

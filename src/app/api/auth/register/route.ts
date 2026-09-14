@@ -8,7 +8,6 @@ const registerSchema = z.object({
   name: z.string().trim().min(1, "Vui lòng nhập tên").max(100),
   email: z.string().trim().toLowerCase().email("Email không hợp lệ"),
   password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự").max(100),
-  grade: z.number().int().min(1).max(5).nullable().optional(),
 });
 
 export async function POST(request: Request) {
@@ -22,7 +21,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { name, email, password, grade } = parsed.data;
+  const { name, email, password } = parsed.data;
 
   await connectDB();
 
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  await UserModel.create({ name, email, passwordHash, grade: grade ?? null });
+  await UserModel.create({ name, email, passwordHash });
 
   return NextResponse.json({ ok: true });
 }

@@ -1,9 +1,14 @@
 import Link from "next/link";
-import { auth, signOut } from "@/auth";
-import { setGrade } from "@/lib/actions/user";
-import { SUBJECTS } from "@/lib/subjects";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { auth } from "@/auth";
+import { UserMenu } from "@/components/user-menu";
+
+const GRADE_STYLES = [
+  "border-primary bg-primary/10 text-primary",
+  "border-secondary bg-secondary/10 text-secondary",
+  "border-accent bg-accent/10 text-accent",
+  "border-primary bg-primary/10 text-primary",
+  "border-secondary bg-secondary/10 text-secondary",
+];
 
 const GRADES = [1, 2, 3, 4, 5];
 
@@ -12,58 +17,55 @@ export default async function HomePage() {
   const user = session!.user;
 
   return (
-    <main className="flex flex-1 flex-col items-center gap-8 p-6">
-      <header className="flex w-full max-w-3xl items-center justify-between">
-        <div>
-          <p className="text-lg font-semibold">Xin chào, {user.name}! 👋</p>
-          <p className="text-sm text-muted-foreground">
-            {user.grade ? `Lớp ${user.grade}` : "Chưa chọn lớp"}
-          </p>
+    <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 -left-24 size-72 rounded-full bg-primary/10 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-32 -right-20 size-64 rounded-full bg-accent/10 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-24 left-1/3 size-80 rounded-full bg-secondary/10 blur-3xl"
+      />
+
+      <header className="relative z-10 flex items-center justify-between border-b border-border/60 bg-white/70 px-6 py-4 backdrop-blur-sm">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">🌱</span>
+          <span className="font-semibold text-primary">Vườn Trí Tuệ</span>
         </div>
-        <form
-          action={async () => {
-            "use server";
-            await signOut({ redirectTo: "/login" });
-          }}
-        >
-          <Button variant="outline" size="sm" type="submit">
-            Đăng xuất
-          </Button>
-        </form>
+
+        <UserMenu name={user.name ?? ""} />
       </header>
 
-      {!user.grade ? (
-        <section className="flex w-full max-w-3xl flex-col items-center gap-4 pt-8">
-          <h1 className="text-xl font-semibold">Con đang học lớp mấy? 🎒</h1>
-          <div className="flex flex-wrap justify-center gap-3">
-            {GRADES.map((grade) => (
-              <form key={grade} action={setGrade.bind(null, grade)}>
-                <Button type="submit" size="lg" variant="outline" className="h-16 w-16 text-2xl">
-                  {grade}
-                </Button>
-              </form>
-            ))}
-          </div>
-        </section>
-      ) : (
-        <section className="grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
-          {SUBJECTS.map((subject) => (
-            <Link key={subject.id} href={`/hoc/${user.grade}/${subject.id}`}>
-              <Card className="cursor-pointer transition hover:shadow-md">
-                <CardHeader>
-                  <CardTitle className="text-4xl">{subject.emoji}</CardTitle>
-                  <CardDescription className="text-base font-medium text-foreground">
-                    {subject.label}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">Xem danh sách bài học</p>
-                </CardContent>
-              </Card>
+      <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-8 px-6 pb-32 text-center">
+        <span className="text-6xl">🎒</span>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-extrabold text-foreground">Con muốn học lớp mấy?</h1>
+          <p className="text-muted-foreground">
+            Chào {user.name}, chọn lớp để bắt đầu hành trình khám phá nhé! 👋
+          </p>
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-6">
+          {GRADES.map((grade, i) => (
+            <Link
+              key={grade}
+              href={`/hoc/${grade}`}
+              className="group flex flex-col items-center gap-2"
+            >
+              <div
+                className={`flex size-24 items-center justify-center rounded-full border-4 text-4xl font-extrabold shadow-sm transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-lg ${GRADE_STYLES[i]}`}
+              >
+                {grade}
+              </div>
+              <span className="text-sm font-medium text-muted-foreground">Lớp {grade}</span>
             </Link>
           ))}
-        </section>
-      )}
-    </main>
+        </div>
+      </main>
+    </div>
   );
 }
