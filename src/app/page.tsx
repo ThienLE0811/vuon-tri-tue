@@ -91,7 +91,17 @@ export default async function HomePage() {
           </div>
         </Link>
 
-        <UserMenu name={user.name ?? ""} />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/bang-xep-hang"
+            className="btn-3d btn-3d-white gap-1.5 px-3.5 py-2 text-sm font-bold"
+            aria-label="Bảng xếp hạng"
+          >
+            <span>🏆</span>
+            <span className="hidden sm:inline">Bảng xếp hạng</span>
+          </Link>
+          <UserMenu name={user.name ?? ""} />
+        </div>
       </header>
 
       {/* Main Hero & Grade selector */}

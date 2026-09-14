@@ -4,6 +4,7 @@ dotenv.config({ path: ".env.local", quiet: true });
 import { connectDB } from "@/lib/db";
 import LessonModel from "@/models/Lesson";
 import ExerciseModel from "@/models/Exercise";
+import { ALL_EXTRA_QUESTIONS } from "./extra-questions/index";
 
 type QuizQuestion = {
   type: "multiple_choice";
@@ -3674,9 +3675,14 @@ async function main() {
       continue;
     }
 
+    const extra = ALL_EXTRA_QUESTIONS.find(
+      (e) => e.subjectId === ex.subjectId && e.grade === ex.grade && e.order === ex.order
+    );
+    const questions = extra ? [...ex.questions, ...extra.questions] : ex.questions;
+
     await ExerciseModel.updateOne(
       { lessonId: lesson._id },
-      { $set: { lessonId: lesson._id, title: ex.title, questions: ex.questions } },
+      { $set: { lessonId: lesson._id, title: ex.title, questions } },
       { upsert: true }
     );
     count++;

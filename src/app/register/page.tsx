@@ -45,7 +45,6 @@ export default function RegisterPage() {
       return;
     }
 
-    setLoading(false);
     toast.success("Đăng ký thành công! Con hãy đăng nhập để bắt đầu học nhé 🌟");
     router.push("/login");
   }
