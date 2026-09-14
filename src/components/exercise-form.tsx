@@ -55,16 +55,16 @@ export function ExerciseForm({
         if (graded.score === graded.totalQuestions && graded.totalQuestions > 0) {
           fireSuperConfetti();
           playFanfare();
-          toast.success("Xuất sắc! Bé trả lời đúng 100% tất cả các câu! 🏆");
+          toast.success("Xuất sắc! Bạn đã trả lời đúng 100% tất cả các câu! 🏆");
         } else if (graded.score > 0) {
           fireCelebrationConfetti();
           playSuccessSound();
-          toast.success(`Giỏi quá! Bé làm đúng ${graded.score}/${graded.totalQuestions} câu! 🌟`);
+          toast.success(`Chúc mừng! Bạn làm đúng ${graded.score}/${graded.totalQuestions} câu! 🌟`);
         } else {
-          toast.info("Con hãy xem lại giải thích và thử lại nhé! Cố lên nào! 💪");
+          toast.info("Bạn hãy xem lại giải thích và thử lại nhé! Cố lên nào! 💪");
         }
       } catch {
-        toast.error("Có lỗi xảy ra, con hãy thử lại nhé!");
+        toast.error("Có lỗi xảy ra, bạn hãy thử lại nhé!");
       }
     });
   };
@@ -81,7 +81,7 @@ export function ExerciseForm({
       {result && (
         <div className="rounded-3xl border-2 border-emerald-300 border-b-4 bg-emerald-50 p-5 text-center shadow-sm">
           <p className="text-lg font-black text-emerald-800 sm:text-xl">
-            🎉 Bé đạt {result.score}/{result.totalQuestions} câu đúng!
+            🎉 Bạn đạt {result.score}/{result.totalQuestions} câu đúng!
           </p>
         </div>
       )}

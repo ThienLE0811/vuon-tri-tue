@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { connectDB } from "@/lib/db";
 import ExerciseModel from "@/models/Exercise";
 import SubmissionModel from "@/models/Submission";
+import { bumpStreak } from "@/lib/streak";
 
 export type GradedQuestion = {
   questionId: string;
@@ -25,7 +26,6 @@ export async function submitExercise(
   path: string
 ): Promise<SubmitExerciseResult> {
   const session = await auth();
-  if (!session?.user?.id) throw new Error("Chưa đăng nhập");
 
   await connectDB();
   const exercise = await ExerciseModel.findById(exerciseId).lean();
@@ -50,15 +50,18 @@ export async function submitExercise(
     submissionAnswers.push({ questionId, answer: givenAnswer, correct });
   }
 
-  await SubmissionModel.create({
-    userId: session.user.id,
-    exerciseId,
-    answers: submissionAnswers,
-    score,
-    totalQuestions: exercise.questions.length,
-  });
+  if (session?.user?.id) {
+    await SubmissionModel.create({
+      userId: session.user.id,
+      exerciseId,
+      answers: submissionAnswers,
+      score,
+      totalQuestions: exercise.questions.length,
+    });
+    await bumpStreak(session.user.id);
 
-  revalidatePath(path);
+    revalidatePath(path);
+  }
 
   return { score, totalQuestions: exercise.questions.length, questions: gradedQuestions };
 }

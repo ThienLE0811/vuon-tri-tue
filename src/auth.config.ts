@@ -1,19 +1,17 @@
 import type { NextAuthConfig } from "next-auth";
 
-const PUBLIC_PATHS = ["/login", "/register", "/api/tts"];
-
 export const authConfig = {
   pages: {
     signIn: "/login",
   },
   providers: [],
   callbacks: {
-    authorized({ auth, request }) {
-      const isPublic = PUBLIC_PATHS.some((path) =>
-        request.nextUrl.pathname.startsWith(path)
-      );
-      if (isPublic) return true;
-      return !!auth?.user;
+    // The whole site is browsable by both guests and logged-in users
+    // (lessons, exercises, leaderboard). Pages and server actions decide
+    // individually what requires a session (saving progress/scores),
+    // so the proxy no longer redirects unauthenticated visitors.
+    authorized() {
+      return true;
     },
   },
 } satisfies NextAuthConfig;

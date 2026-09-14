@@ -1,7 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { connectDB } from "@/lib/db";
 import SubmissionModel from "@/models/Submission";
+
+export const metadata: Metadata = {
+  title: "Bảng xếp hạng – Top học sinh chăm chỉ",
+  description:
+    "Vinh danh những bạn nhỏ chăm chỉ và có thành tích học tập xuất sắc nhất trên Vườn Trí Tuệ. Cùng thi đua học tập và rèn luyện kiến thức mỗi ngày!",
+  openGraph: {
+    title: "Bảng xếp hạng – Top học sinh chăm chỉ | Vườn Trí Tuệ",
+    description:
+      "Vinh danh những bạn nhỏ chăm chỉ và có thành tích xuất sắc nhất trên Vườn Trí Tuệ.",
+    url: "/bang-xep-hang",
+  },
+};
 
 type LeaderboardRow = {
   userId: unknown;
@@ -19,28 +32,31 @@ function firstName(fullName: string) {
 
 export default async function LeaderboardPage() {
   const session = await auth();
-  const userId = session!.user.id;
+  const userId = session?.user?.id;
 
-  await connectDB();
-  const rows = await SubmissionModel.aggregate<LeaderboardRow>([
-    {
-      $group: {
-        _id: { userId: "$userId", exerciseId: "$exerciseId" },
-        bestScore: { $max: "$score" },
+  let rows: LeaderboardRow[] = [];
+  if (userId) {
+    await connectDB();
+    rows = await SubmissionModel.aggregate<LeaderboardRow>([
+      {
+        $group: {
+          _id: { userId: "$userId", exerciseId: "$exerciseId" },
+          bestScore: { $max: "$score" },
+        },
       },
-    },
-    {
-      $group: {
-        _id: "$_id.userId",
-        totalScore: { $sum: "$bestScore" },
-        exercisesAttempted: { $sum: 1 },
+      {
+        $group: {
+          _id: "$_id.userId",
+          totalScore: { $sum: "$bestScore" },
+          exercisesAttempted: { $sum: 1 },
+        },
       },
-    },
-    { $sort: { totalScore: -1, exercisesAttempted: -1 } },
-    { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "user" } },
-    { $unwind: "$user" },
-    { $project: { _id: 0, userId: "$_id", name: "$user.name", totalScore: 1, exercisesAttempted: 1 } },
-  ]);
+      { $sort: { totalScore: -1, exercisesAttempted: -1 } },
+      { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "user" } },
+      { $unwind: "$user" },
+      { $project: { _id: 0, userId: "$_id", name: "$user.name", totalScore: 1, exercisesAttempted: 1 } },
+    ]);
+  }
 
   const myIndex = rows.findIndex((row) => String(row.userId) === userId);
   const myRow = myIndex >= 0 ? rows[myIndex] : null;
@@ -69,32 +85,62 @@ export default async function LeaderboardPage() {
         </div>
       </div>
 
-      {!myRow ? (
-        <div className="rounded-3xl border-2 border-dashed border-slate-300 bg-white/50 p-8 text-center">
-          <p className="text-base font-bold text-slate-500">
-            Con chưa có điểm nào — làm bài tập đầu tiên để lên bảng nhé! 📝
-          </p>
+      {!userId ? (
+        <div className="flex flex-col items-center gap-4 rounded-3xl border-3 border-amber-300 border-b-[6px] bg-white p-8 text-center shadow-lg">
+          <div className="flex size-16 items-center justify-center rounded-2xl border-2 border-amber-300 border-b-4 bg-amber-100 text-3xl shadow-sm">
+            🔒
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-xl font-black text-slate-800">
+              Đăng nhập để xem Bảng Vàng nhé!
+            </h2>
+            <p className="text-sm font-semibold text-slate-500">
+              Bạn hãy đăng nhập tài khoản để xem thứ hạng của mình và thi đua cùng các bạn nhé! ✨
+            </p>
+          </div>
+          <Link
+            href="/login?callbackUrl=/bang-xep-hang"
+            className="btn-3d btn-3d-green px-6 py-3 text-base font-black"
+          >
+            Đăng nhập ngay 🚀
+          </Link>
         </div>
-      ) : myRank !== null && myRank > 50 ? (
-        <LeaderboardRow
-          rank={myRank}
-          row={myRow}
-          isMe
-          highlightLabel="Vị trí của con"
-        />
-      ) : null}
-
-      {top.length > 0 && (
-        <div className="flex flex-col gap-3">
-          {top.map((row, index) => (
+      ) : (
+        <>
+          {!myRow ? (
+            <div className="rounded-3xl border-2 border-dashed border-slate-300 bg-white/50 p-8 text-center">
+              <p className="text-base font-bold text-slate-500">
+                Bạn chưa có điểm nào — làm bài tập đầu tiên để lên bảng nhé! 📝
+              </p>
+            </div>
+          ) : myRank !== null && myRank > 50 ? (
             <LeaderboardRow
-              key={String(row.userId)}
-              rank={index + 1}
-              row={row}
-              isMe={String(row.userId) === userId}
+              rank={myRank}
+              row={myRow}
+              isMe
+              highlightLabel="Vị trí của bạn"
             />
-          ))}
-        </div>
+          ) : null}
+
+          {top.length > 0 ? (
+            <div className="flex flex-col gap-3">
+              {top.map((row, index) => (
+                <LeaderboardRow
+                  key={String(row.userId)}
+                  rank={index + 1}
+                  row={row}
+                  isMe={String(row.userId) === userId}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-3xl border-2 border-dashed border-slate-300 bg-white/50 p-8 text-center">
+              <p className="text-base font-bold text-slate-500">
+                Chưa có bạn nào trên bảng xếp hạng. Hãy là người đầu tiên nhé! 🌟
+              </p>
+            </div>
+          )}
+        </>
       )}
     </main>
   );
@@ -136,7 +182,7 @@ function LeaderboardRow({
         <div className="flex flex-col">
           <span className="text-base font-extrabold text-slate-800 sm:text-lg">
             {firstName(row.name)}
-            {isMe && <span className="ml-1.5 text-xs font-bold text-emerald-600">(Con)</span>}
+            {isMe && <span className="ml-1.5 text-xs font-bold text-emerald-600">(Bạn)</span>}
           </span>
           {highlightLabel && (
             <span className="text-xs font-bold text-amber-600">{highlightLabel}</span>

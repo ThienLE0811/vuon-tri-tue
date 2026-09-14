@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { connectDB } from "@/lib/db";
 import ProgressModel from "@/models/Progress";
+import { bumpStreak } from "@/lib/streak";
 
 export async function markLessonComplete(lessonId: string, path: string) {
   const session = await auth();
@@ -15,6 +16,7 @@ export async function markLessonComplete(lessonId: string, path: string) {
     { completed: true, completedAt: new Date() },
     { upsert: true }
   );
+  await bumpStreak(session.user.id);
 
   revalidatePath(path);
 }

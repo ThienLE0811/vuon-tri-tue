@@ -1,6 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@/auth";
+import { connectDB } from "@/lib/db";
+import UserModel from "@/models/User";
 import { UserMenu } from "@/components/user-menu";
+
+export const metadata: Metadata = {
+  title: "Vườn Trí Tuệ – Học tập trực tuyến cho học sinh Tiểu học & THCS",
+  description:
+    "Cùng khám phá thế giới bài học sinh động tại Vườn Trí Tuệ! Nền tảng học tập trực tuyến dành cho học sinh Tiểu học và Trung học cơ sở (THCS) với bài giảng tương tác và bài tập trắc nghiệm thú vị.",
+  openGraph: {
+    title: "Vườn Trí Tuệ – Học tập trực tuyến cho học sinh Tiểu học & THCS",
+    description:
+      "Khám phá bài học sinh động, rèn luyện tư duy và tích lũy điểm số mỗi ngày cùng Vườn Trí Tuệ.",
+    url: "/",
+  },
+};
 
 const GRADE_CONFIGS = [
   {
@@ -57,7 +72,14 @@ const GRADE_CONFIGS = [
 
 export default async function HomePage() {
   const session = await auth();
-  const user = session!.user;
+  const user = session?.user;
+
+  let streak = 0;
+  if (user?.id) {
+    await connectDB();
+    const dbUser = await UserModel.findById(user.id).select("streak");
+    streak = dbUser?.streak ?? 0;
+  }
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-x-clip">
@@ -86,7 +108,7 @@ export default async function HomePage() {
               Vườn Trí Tuệ
             </span>
             <span className="text-[10px] font-bold text-emerald-600/80">
-              Học tập vui nhộn
+              Học tập thông minh
             </span>
           </div>
         </Link>
@@ -100,7 +122,24 @@ export default async function HomePage() {
             <span>🏆</span>
             <span className="hidden sm:inline">Bảng xếp hạng</span>
           </Link>
-          <UserMenu name={user.name ?? ""} />
+          {user ? (
+            <UserMenu name={user.name ?? ""} />
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/login"
+                className="btn-3d btn-3d-white px-3.5 py-2 text-sm font-bold"
+              >
+                Đăng nhập
+              </Link>
+              <Link
+                href="/register"
+                className="btn-3d btn-3d-green px-3.5 py-2 text-sm font-bold"
+              >
+                Đăng ký
+              </Link>
+            </div>
+          )}
         </div>
       </header>
 
@@ -108,8 +147,16 @@ export default async function HomePage() {
       <main className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-10 px-6 py-12 text-center">
         {/* Friendly mascot & welcoming speech */}
         <div className="flex flex-col items-center gap-4">
-          <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-300 border-b-4 bg-amber-100 px-4 py-1.5 text-xs font-black text-amber-900 shadow-sm">
-            <span>✨</span> Chào mừng bé {user.name} đến với Vườn Trí Tuệ!
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-300 border-b-4 bg-amber-100 px-4 py-1.5 text-xs font-black text-amber-900 shadow-sm">
+              <span>✨</span>{" "}
+              {user ? `Chào mừng ${user.name} đến với Vườn Trí Tuệ!` : "Chào mừng đến với Vườn Trí Tuệ!"}
+            </div>
+            {streak > 0 && (
+              <div className="inline-flex items-center gap-1.5 rounded-full border-2 border-orange-300 border-b-4 bg-orange-100 px-4 py-1.5 text-xs font-black text-orange-800 shadow-sm">
+                <span>🔥</span> {streak} ngày liên tục
+              </div>
+            )}
           </div>
 
           <div className="relative">
@@ -123,10 +170,10 @@ export default async function HomePage() {
 
           <div className="max-w-md space-y-2">
             <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-              Hôm nay con muốn học lớp mấy?
+              Hôm nay bạn muốn học lớp mấy?
             </h1>
             <p className="text-base font-semibold text-slate-600">
-              Hãy chọn lớp của con để bắt đầu hành trình khám phá những bài học thú vị nhé! 👋
+              Hãy chọn khối lớp để bắt đầu hành trình khám phá những bài học thú vị nhé! 👋
             </p>
           </div>
         </div>
@@ -164,7 +211,7 @@ export default async function HomePage() {
         {/* Bottom encouraging card */}
         <div className="inline-flex items-center gap-3 rounded-2xl border-2 border-emerald-300 border-b-4 bg-emerald-50 px-5 py-3 text-sm font-extrabold text-emerald-800 shadow-sm">
           <span className="text-xl">🌟</span>
-          <span>Mỗi ngày hoàn thành một bài học để cây trí tuệ của con ra hoa kết quả nhé!</span>
+          <span>Mỗi ngày hoàn thành một bài học để cây trí tuệ phát triển vững vàng nhé!</span>
         </div>
       </main>
     </div>

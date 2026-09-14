@@ -1,6 +1,36 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SUBJECTS } from "@/lib/subjects";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ grade: string }>;
+}): Promise<Metadata> {
+  const { grade: gradeParam } = await params;
+  const grade = Number(gradeParam);
+
+  if (!Number.isInteger(grade) || grade < 1 || grade > 5) {
+    return {
+      title: "Khối lớp không tồn tại",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = `Lớp ${grade} – Danh sách môn học`;
+  const description = `Chương trình học tập Lớp ${grade} trên Vườn Trí Tuệ. Khám phá kho môn học phong phú với các bài giảng trực quan và bài tập tương tác hấp dẫn!`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | Vườn Trí Tuệ`,
+      description,
+      url: `/hoc/${grade}`,
+    },
+  };
+}
 
 export default async function GradePage({
   params,
@@ -34,7 +64,7 @@ export default async function GradePage({
             </span>
           </div>
           <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-            Con muốn học môn nào hôm nay?
+            Bạn muốn học môn nào hôm nay?
           </h1>
           <p className="text-base font-semibold text-slate-600">
             Chọn một môn học yêu thích để bắt đầu khám phá các bài giảng nhé!
@@ -43,7 +73,7 @@ export default async function GradePage({
       </div>
 
       {/* 3D Subject Cards */}
-      <section className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
         {SUBJECTS.map((subject) => (
           <Link
             key={subject.id}

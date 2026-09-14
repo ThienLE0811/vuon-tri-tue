@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
@@ -5,6 +6,36 @@ import { connectDB } from "@/lib/db";
 import LessonModel from "@/models/Lesson";
 import ProgressModel from "@/models/Progress";
 import { isSubjectId, subjectLabel, SUBJECTS } from "@/lib/subjects";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ grade: string; subject: string }>;
+}): Promise<Metadata> {
+  const { grade: gradeParam, subject } = await params;
+  const grade = Number(gradeParam);
+
+  if (!Number.isInteger(grade) || grade < 1 || grade > 5 || !isSubjectId(subject)) {
+    return {
+      title: "Môn học không tồn tại",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const label = subjectLabel(subject);
+  const title = `Môn ${label} Lớp ${grade} – Danh sách bài học`;
+  const description = `Tổng hợp toàn bộ bài học môn ${label} Lớp ${grade} bám sát chương trình chuẩn. Bài giảng trực quan, âm thanh sinh động kèm bài tập trắc nghiệm củng cố.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | Vườn Trí Tuệ`,
+      description,
+      url: `/hoc/${grade}/${subject}`,
+    },
+  };
+}
 
 export default async function LessonListPage({
   params,
@@ -19,18 +50,20 @@ export default async function LessonListPage({
   }
 
   const session = await auth();
-  const userId = session!.user.id;
+  const userId = session?.user?.id;
 
   await connectDB();
   const lessons = await LessonModel.find({ grade, subjectId: subject })
     .sort({ order: 1 })
     .lean();
 
-  const progressList = await ProgressModel.find({
-    userId,
-    lessonId: { $in: lessons.map((l) => l._id) },
-    completed: true,
-  }).lean();
+  const progressList = userId
+    ? await ProgressModel.find({
+        userId,
+        lessonId: { $in: lessons.map((l) => l._id) },
+        completed: true,
+      }).lean()
+    : [];
   const completedIds = new Set(progressList.map((p) => p.lessonId.toString()));
 
   const percent =
@@ -89,7 +122,7 @@ export default async function LessonListPage({
       {lessons.length === 0 ? (
         <div className="rounded-3xl border-2 border-dashed border-slate-300 bg-white/50 p-8 text-center">
           <p className="text-base font-bold text-slate-500">
-            Chưa có bài học nào cho lớp này. Con quay lại sau nhé! 🌿
+            Chưa có bài học nào cho lớp này. Bạn hãy quay lại sau nhé! 🌿
           </p>
         </div>
       ) : (

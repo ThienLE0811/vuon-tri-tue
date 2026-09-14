@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Types } from "mongoose";
@@ -9,6 +10,47 @@ import SubmissionModel from "@/models/Submission";
 import { subjectLabel } from "@/lib/subjects";
 import { ExerciseForm } from "@/components/exercise-form";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ grade: string; subject: string; lessonId: string }>;
+}): Promise<Metadata> {
+  const { grade, subject, lessonId } = await params;
+
+  if (!Types.ObjectId.isValid(lessonId)) {
+    return {
+      title: "Bài tập không tồn tại",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  await connectDB();
+  const lesson = await LessonModel.findById(lessonId).select("title").lean();
+  const exercise = await ExerciseModel.findOne({ lessonId }).select("title questions").lean();
+
+  if (!exercise || !lesson) {
+    return {
+      title: "Bài tập không tồn tại",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const label = subjectLabel(subject);
+  const title = `Bài tập: ${exercise.title || lesson.title} – ${label} Lớp ${grade}`;
+  const count = exercise.questions?.length ?? 0;
+  const description = `Làm bài tập trắc nghiệm ${count > 0 ? `${count} câu hỏi ` : ""}củng cố kiến thức bài "${lesson.title}" môn ${label} Lớp ${grade}. Tích lũy điểm và thi đua trên Vườn Trí Tuệ!`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | Vườn Trí Tuệ`,
+      description,
+      url: `/hoc/${grade}/${subject}/${lessonId}/exercise`,
+    },
+  };
+}
+
 export default async function ExercisePage({
   params,
 }: {
@@ -19,7 +61,7 @@ export default async function ExercisePage({
   if (!Types.ObjectId.isValid(lessonId)) notFound();
 
   const session = await auth();
-  const userId = session!.user.id;
+  const userId = session?.user?.id;
 
   await connectDB();
   const lesson = await LessonModel.findById(lessonId).lean();
@@ -28,12 +70,14 @@ export default async function ExercisePage({
   const exercise = await ExerciseModel.findOne({ lessonId }).lean();
   if (!exercise) notFound();
 
-  const bestSubmission = await SubmissionModel.findOne({
-    userId,
-    exerciseId: exercise._id,
-  })
-    .sort({ score: -1 })
-    .lean();
+  const bestSubmission = userId
+    ? await SubmissionModel.findOne({
+        userId,
+        exerciseId: exercise._id,
+      })
+        .sort({ score: -1 })
+        .lean()
+    : null;
 
   const path = `/hoc/${grade}/${subject}/${lessonId}/exercise`;
   const questions = exercise.questions.map((q: (typeof exercise.questions)[number]) => ({

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Types } from "mongoose";
@@ -11,6 +12,48 @@ import { subjectLabel } from "@/lib/subjects";
 import { CompleteLessonButton } from "@/components/complete-lesson-button";
 import ExerciseModel from "@/models/Exercise";
 import { SpeechButton } from "@/components/speech-button";
+import { cleanDescription } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ grade: string; subject: string; lessonId: string }>;
+}): Promise<Metadata> {
+  const { grade, subject, lessonId } = await params;
+
+  if (!Types.ObjectId.isValid(lessonId)) {
+    return {
+      title: "Bài học không tồn tại",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  await connectDB();
+  const lesson = await LessonModel.findById(lessonId).select("title content").lean();
+  if (!lesson) {
+    return {
+      title: "Bài học không tồn tại",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const label = subjectLabel(subject);
+  const title = `${lesson.title} – ${label} Lớp ${grade}`;
+  const description = cleanDescription(
+    lesson.content,
+    160
+  );
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | Vườn Trí Tuệ`,
+      description,
+      url: `/hoc/${grade}/${subject}/${lessonId}`,
+    },
+  };
+}
 
 export default async function LessonDetailPage({
   params,
@@ -22,13 +65,15 @@ export default async function LessonDetailPage({
   if (!Types.ObjectId.isValid(lessonId)) notFound();
 
   const session = await auth();
-  const userId = session!.user.id;
+  const userId = session?.user?.id;
 
   await connectDB();
   const lesson = await LessonModel.findById(lessonId).lean();
   if (!lesson) notFound();
 
-  const progress = await ProgressModel.findOne({ userId, lessonId, completed: true }).lean();
+  const progress = userId
+    ? await ProgressModel.findOne({ userId, lessonId, completed: true }).lean()
+    : null;
   const exercise = await ExerciseModel.findOne({ lessonId }).lean();
   const path = `/hoc/${grade}/${subject}/${lessonId}`;
 
@@ -97,11 +142,20 @@ export default async function LessonDetailPage({
 
       {/* Complete Button with loading state & spam prevention */}
       <div className="pt-2">
-        <CompleteLessonButton
-          lessonId={lessonId}
-          path={path}
-          isCompleted={!!progress}
-        />
+        {userId ? (
+          <CompleteLessonButton
+            lessonId={lessonId}
+            path={path}
+            isCompleted={!!progress}
+          />
+        ) : (
+          <Link
+            href="/login"
+            className="btn-3d btn-3d-white flex w-full items-center justify-center gap-2.5 py-4 text-base font-black tracking-wide sm:text-lg"
+          >
+            Đăng nhập để lưu tiến độ ⭐
+          </Link>
+        )}
       </div>
     </main>
   );
