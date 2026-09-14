@@ -61,60 +61,67 @@ export default function RegisterPage() {
     <main className="flex flex-1 items-center justify-center p-4">
       <div className="flex w-full max-w-sm flex-col items-center">
         <Brand />
-        <Card className="w-full">
+        <Card className="w-full rounded-3xl border-2 border-slate-200 border-b-5 bg-white shadow-md">
           <CardHeader>
-            <CardTitle className="text-2xl">Đăng ký</CardTitle>
-            <CardDescription>Tạo tài khoản để bắt đầu học nhé!</CardDescription>
+            <CardTitle className="text-2xl font-black text-slate-800">Đăng ký</CardTitle>
+            <CardDescription className="font-semibold text-slate-500">
+              Tạo tài khoản để bắt đầu học nhé! 🌟
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Tên</Label>
+                <Label htmlFor="name" className="font-bold text-slate-700">Tên của bé</Label>
                 <Input
                   id="name"
                   required
+                  placeholder="Ví dụ: Bé Bo"
+                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="font-bold text-slate-700">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   required
+                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Mật khẩu</Label>
+                <Label htmlFor="password" className="font-bold text-slate-700">Mật khẩu</Label>
                 <PasswordInput
                   id="password"
                   required
                   minLength={6}
+                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">Nhập lại mật khẩu</Label>
+                <Label htmlFor="confirm-password" className="font-bold text-slate-700">Nhập lại mật khẩu</Label>
                 <PasswordInput
                   id="confirm-password"
                   required
                   minLength={6}
+                  className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Đang đăng ký..." : "Đăng ký"}
+              <Button type="submit" variant="3d-primary" size="3d-default" className="w-full" disabled={loading}>
+                {loading ? "Đang đăng ký..." : "Tạo tài khoản ngay 🚀"}
               </Button>
             </form>
 
-            <p className="text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm font-bold text-slate-500">
               Đã có tài khoản?{" "}
-              <Link href="/login" className="underline underline-offset-4">
+              <Link href="/login" className="text-emerald-700 underline underline-offset-4 hover:text-emerald-800">
                 Đăng nhập
               </Link>
             </p>

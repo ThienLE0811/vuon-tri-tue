@@ -46,15 +46,18 @@ function LoginForm() {
   return (
     <div className="flex w-full max-w-sm flex-col items-center">
       <Brand />
-      <Card className="w-full">
+      <Card className="w-full rounded-3xl border-2 border-slate-200 border-b-5 bg-white shadow-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Đăng nhập</CardTitle>
-          <CardDescription>Vào học cùng Vườn Trí Tuệ nhé!</CardDescription>
+          <CardTitle className="text-2xl font-black text-slate-800">Đăng nhập</CardTitle>
+          <CardDescription className="font-semibold text-slate-500">
+            Vào học cùng Vườn Trí Tuệ nhé! 🌟
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button
             type="button"
-            variant="outline"
+            variant="3d-outline"
+            size="3d-default"
             className="w-full"
             onClick={() => signIn("google", { callbackUrl })}
           >
@@ -63,38 +66,40 @@ function LoginForm() {
 
           <div className="flex items-center gap-2">
             <Separator className="flex-1" />
-            <span className="text-xs text-muted-foreground">hoặc</span>
+            <span className="text-xs font-bold text-slate-400">hoặc</span>
             <Separator className="flex-1" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="font-bold text-slate-700">Email</Label>
               <Input
                 id="email"
                 type="email"
                 required
+                className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Mật khẩu</Label>
+              <Label htmlFor="password" className="font-bold text-slate-700">Mật khẩu</Label>
               <PasswordInput
                 id="password"
                 required
+                className="rounded-xl border-2 border-slate-200 focus-visible:border-emerald-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+            <Button type="submit" variant="3d-primary" size="3d-default" className="w-full" disabled={loading}>
+              {loading ? "Đang đăng nhập..." : "Đăng nhập ngay 🚀"}
             </Button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-sm font-bold text-slate-500">
             Chưa có tài khoản?{" "}
-            <Link href="/register" className="underline underline-offset-4">
+            <Link href="/register" className="text-emerald-700 underline underline-offset-4 hover:text-emerald-800">
               Đăng ký
             </Link>
           </p>

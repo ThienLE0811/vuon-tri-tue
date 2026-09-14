@@ -17,6 +17,13 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
+        "3d-primary": "btn-3d btn-3d-green text-white tracking-wide",
+        "3d-secondary": "btn-3d btn-3d-amber text-white tracking-wide",
+        "3d-accent": "btn-3d btn-3d-blue text-white tracking-wide",
+        "3d-rose": "btn-3d btn-3d-rose text-white tracking-wide",
+        "3d-purple": "btn-3d btn-3d-purple text-white tracking-wide",
+        "3d-outline": "btn-3d btn-3d-white text-slate-700 tracking-wide",
+        "3d-ghost": "rounded-xl font-bold text-muted-foreground hover:text-foreground hover:bg-muted active:translate-y-0.5",
       },
       size: {
         default:
@@ -24,6 +31,9 @@ const buttonVariants = cva(
         xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
         sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
         lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        "3d-sm": "h-9 gap-1.5 px-3.5 text-sm",
+        "3d-default": "h-11 gap-2 px-5 text-base",
+        "3d-lg": "h-13 gap-2.5 px-7 text-lg rounded-2xl",
         icon: "size-8",
         "icon-xs":
           "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",

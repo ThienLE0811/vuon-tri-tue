@@ -28,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       style={{ colorScheme: "light" }}
       className={`${nunito.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col" suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-garden-pattern" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

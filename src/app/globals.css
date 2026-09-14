@@ -103,3 +103,129 @@
     @apply font-sans;
   }
 }
+
+/* 3D Playful Tactile Buttons */
+.btn-3d {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 1rem;
+  border-width: 2px;
+  border-bottom-width: 5px;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  cursor: pointer;
+}
+.btn-3d:active {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+}
+
+.btn-3d-green {
+  background-color: #22c55e;
+  border-color: #15803d;
+  color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.25);
+}
+.btn-3d-green:hover {
+  background-color: #16a34a;
+}
+.btn-3d-green:active {
+  box-shadow: none;
+}
+
+.btn-3d-amber {
+  background-color: #f59e0b;
+  border-color: #b45309;
+  color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.25);
+}
+.btn-3d-amber:hover {
+  background-color: #d97706;
+}
+.btn-3d-amber:active {
+  box-shadow: none;
+}
+
+.btn-3d-blue {
+  background-color: #3b82f6;
+  border-color: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.25);
+}
+.btn-3d-blue:hover {
+  background-color: #2563eb;
+}
+.btn-3d-blue:active {
+  box-shadow: none;
+}
+
+.btn-3d-rose {
+  background-color: #f43f5e;
+  border-color: #be123c;
+  color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.25);
+}
+.btn-3d-rose:hover {
+  background-color: #e11d48;
+}
+.btn-3d-rose:active {
+  box-shadow: none;
+}
+
+.btn-3d-purple {
+  background-color: #a855f7;
+  border-color: #7e22ce;
+  color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(168, 85, 247, 0.25);
+}
+.btn-3d-purple:hover {
+  background-color: #9333ea;
+}
+.btn-3d-purple:active {
+  box-shadow: none;
+}
+
+.btn-3d-white {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #334155;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
+}
+.btn-3d-white:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+.btn-3d-white:active {
+  box-shadow: none;
+}
+
+/* 3D Tactile Card */
+.card-3d {
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-bottom: 5px solid #cbd5e1;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-3d-interactive {
+  cursor: pointer;
+}
+.card-3d-interactive:hover {
+  transform: translateY(-3px);
+  border-bottom-width: 7px;
+}
+.card-3d-interactive:active {
+  transform: translateY(2px);
+  border-bottom-width: 3px;
+}
+
+/* Playful garden background pattern */
+.bg-garden-pattern {
+  background-color: #f8fafc;
+  background-image: radial-gradient(#86efac 1.2px, transparent 1.2px), radial-gradient(#fed7aa 1.2px, #f8fafc 1.2px);
+  background-size: 48px 48px;
+  background-position: 0 0, 24px 24px;
+}

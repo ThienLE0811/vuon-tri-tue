@@ -2,15 +2,58 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { UserMenu } from "@/components/user-menu";
 
-const GRADE_STYLES = [
-  "border-primary bg-primary/10 text-primary",
-  "border-secondary bg-secondary/10 text-secondary",
-  "border-accent bg-accent/10 text-accent",
-  "border-primary bg-primary/10 text-primary",
-  "border-secondary bg-secondary/10 text-secondary",
+const GRADE_CONFIGS = [
+  {
+    grade: 1,
+    tag: "Khởi đầu vui nhộn",
+    icon: "🎈",
+    bg: "bg-rose-500",
+    hoverBg: "hover:bg-rose-400",
+    border: "border-rose-700",
+    shadow: "shadow-rose-200",
+    circleBg: "bg-rose-600/60",
+  },
+  {
+    grade: 2,
+    tag: "Chăm chỉ tiến bước",
+    icon: "⭐",
+    bg: "bg-amber-500",
+    hoverBg: "hover:bg-amber-400",
+    border: "border-amber-700",
+    shadow: "shadow-amber-200",
+    circleBg: "bg-amber-600/60",
+  },
+  {
+    grade: 3,
+    tag: "Bứt phá tư duy",
+    icon: "🌿",
+    bg: "bg-emerald-500",
+    hoverBg: "hover:bg-emerald-400",
+    border: "border-emerald-700",
+    shadow: "shadow-emerald-200",
+    circleBg: "bg-emerald-600/60",
+  },
+  {
+    grade: 4,
+    tag: "Chinh phục thử thách",
+    icon: "🚀",
+    bg: "bg-blue-500",
+    hoverBg: "hover:bg-blue-400",
+    border: "border-blue-700",
+    shadow: "shadow-blue-200",
+    circleBg: "bg-blue-600/60",
+  },
+  {
+    grade: 5,
+    tag: "Về đích tự tin",
+    icon: "👑",
+    bg: "bg-purple-500",
+    hoverBg: "hover:bg-purple-400",
+    border: "border-purple-700",
+    shadow: "shadow-purple-200",
+    circleBg: "bg-purple-600/60",
+  },
 ];
-
-const GRADES = [1, 2, 3, 4, 5];
 
 export default async function HomePage() {
   const session = await auth();
@@ -18,52 +61,100 @@ export default async function HomePage() {
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
+      {/* Decorative ambient blurred color spots */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-24 -left-24 size-72 rounded-full bg-primary/10 blur-3xl"
+        className="pointer-events-none absolute -top-24 -left-24 size-80 rounded-full bg-emerald-300/20 blur-3xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute top-32 -right-20 size-64 rounded-full bg-accent/10 blur-3xl"
+        className="pointer-events-none absolute top-36 -right-20 size-72 rounded-full bg-amber-300/20 blur-3xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-24 left-1/3 size-80 rounded-full bg-secondary/10 blur-3xl"
+        className="pointer-events-none absolute -bottom-24 left-1/3 size-96 rounded-full bg-sky-300/20 blur-3xl"
       />
 
-      <header className="relative z-10 flex items-center justify-between border-b border-border/60 bg-white/70 px-6 py-4 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🌱</span>
-          <span className="font-semibold text-primary">Vườn Trí Tuệ</span>
-        </div>
+      {/* Header bar */}
+      <header className="relative z-10 mx-auto mt-3 flex w-full max-w-5xl items-center justify-between rounded-3xl border-2 border-slate-200/80 border-b-4 bg-white/90 px-5 py-3 shadow-sm backdrop-blur-md">
+        <Link href="/" className="flex items-center gap-2.5 transition-transform hover:scale-105 active:scale-95">
+          <div className="flex size-10 items-center justify-center rounded-2xl border-2 border-emerald-600 border-b-4 bg-emerald-500 text-2xl shadow-sm">
+            🌱
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-black tracking-tight text-emerald-700">
+              Vườn Trí Tuệ
+            </span>
+            <span className="text-[10px] font-bold text-emerald-600/80">
+              Học tập vui nhộn
+            </span>
+          </div>
+        </Link>
 
         <UserMenu name={user.name ?? ""} />
       </header>
 
-      <main className="relative z-10 flex flex-1 flex-col items-center justify-center gap-8 px-6 pb-32 text-center">
-        <span className="text-6xl">🎒</span>
-        <div className="space-y-2">
-          <h1 className="text-3xl font-extrabold text-foreground">Con muốn học lớp mấy?</h1>
-          <p className="text-muted-foreground">
-            Chào {user.name}, chọn lớp để bắt đầu hành trình khám phá nhé! 👋
-          </p>
+      {/* Main Hero & Grade selector */}
+      <main className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-10 px-6 py-12 text-center">
+        {/* Friendly mascot & welcoming speech */}
+        <div className="flex flex-col items-center gap-4">
+          <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-300 border-b-4 bg-amber-100 px-4 py-1.5 text-xs font-black text-amber-900 shadow-sm">
+            <span>✨</span> Chào mừng bé {user.name} đến với Vườn Trí Tuệ!
+          </div>
+
+          <div className="relative">
+            <div className="flex size-24 items-center justify-center rounded-3xl border-3 border-amber-300 border-b-[6px] bg-gradient-to-br from-amber-100 to-amber-200 text-5xl shadow-lg transition-transform hover:scale-110 active:scale-95">
+              🎒
+            </div>
+            <div className="absolute -bottom-2 -right-2 flex size-8 items-center justify-center rounded-full border-2 border-emerald-500 border-b-3 bg-emerald-400 text-sm shadow-md">
+              🌱
+            </div>
+          </div>
+
+          <div className="max-w-md space-y-2">
+            <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
+              Hôm nay con muốn học lớp mấy?
+            </h1>
+            <p className="text-base font-semibold text-slate-600">
+              Hãy chọn lớp của con để bắt đầu hành trình khám phá những bài học thú vị nhé! 👋
+            </p>
+          </div>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-6">
-          {GRADES.map((grade, i) => (
+        {/* 3D Grade Selector Buttons Grid */}
+        <div className="grid w-full max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 sm:gap-6">
+          {GRADE_CONFIGS.map((item) => (
             <Link
-              key={grade}
-              href={`/hoc/${grade}`}
-              className="group flex flex-col items-center gap-2"
+              key={item.grade}
+              href={`/hoc/${item.grade}`}
+              className={`group relative flex flex-col items-center justify-between rounded-3xl border-3 ${item.border} border-b-[8px] ${item.bg} ${item.hoverBg} p-5 text-white shadow-lg ${item.shadow} transition-all duration-150 hover:-translate-y-1.5 active:translate-y-1 active:border-b-[3px]`}
             >
-              <div
-                className={`flex size-24 items-center justify-center rounded-full border-4 text-4xl font-extrabold shadow-sm transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-lg ${GRADE_STYLES[i]}`}
-              >
-                {grade}
+              {/* Little emoji badge in corner */}
+              <div className="absolute top-3 right-3 text-lg transition-transform group-hover:scale-125">
+                {item.icon}
               </div>
-              <span className="text-sm font-medium text-muted-foreground">Lớp {grade}</span>
+
+              {/* Big tactile number in glowing circle */}
+              <div className="mt-2 flex size-20 items-center justify-center rounded-2xl border-2 border-white/40 border-b-4 bg-white/20 text-4xl font-black text-white shadow-inner backdrop-blur-xs transition-transform group-hover:scale-105">
+                {item.grade}
+              </div>
+
+              <div className="mt-4 flex flex-col items-center gap-1">
+                <span className="text-xl font-black tracking-wide text-white drop-shadow-xs">
+                  Lớp {item.grade}
+                </span>
+                <span className="rounded-full bg-black/15 px-2.5 py-0.5 text-[11px] font-bold text-white/90">
+                  {item.tag}
+                </span>
+              </div>
             </Link>
           ))}
+        </div>
+
+        {/* Bottom encouraging card */}
+        <div className="inline-flex items-center gap-3 rounded-2xl border-2 border-emerald-300 border-b-4 bg-emerald-50 px-5 py-3 text-sm font-extrabold text-emerald-800 shadow-sm">
+          <span className="text-xl">🌟</span>
+          <span>Mỗi ngày hoàn thành một bài học để cây trí tuệ của con ra hoa kết quả nhé!</span>
         </div>
       </main>
     </div>
